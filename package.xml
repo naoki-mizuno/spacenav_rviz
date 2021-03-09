@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>spacenav_rviz</name>
+  <version>0.1.0</version>
+  <description>spacenav_rviz package</description>
+
+  <maintainer email="naoki.mizuno.256@gmail.com">Naoki Mizuno</maintainer>
+
+  <license>MIT</license>
+
+  <url type="website">https://github.com/naoki-mizuno/spacenav_rviz</url>
+
+  <author>Naoki Mizuno</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>spacenav_node</exec_depend>
+</package>

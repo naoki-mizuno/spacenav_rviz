@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="frame_id" default="world" />
+  <arg name="child_frame_id" default="camera" />
+
+  <arg name="config" default="$(find spacenav_rviz)/rviz/view.rviz" />
+  <!-- Choose from: classic.launch, static_deadband.launch, no_deadband.launch -->
+  <arg name="spacenav_launch" default="static_deadband.launch" />
+
+  <node pkg="spacenav_rviz" type="spacenav_tf.py" name="spacenav_rviz" >
+    <rosparam command="load" file="$(find spacenav_rviz)/config/params.yaml" />
+    <param name="frame_id" value="$(arg frame_id)" />
+    <param name="child_frame_id" value="$(arg child_frame_id)" />
+  </node>
+
+  <include file="$(find spacenav_node)/launch/$(arg spacenav_launch)" />
+
+  <node name="rviz" pkg="rviz" type="rviz"
+      args="-d $(arg config)" />
+</launch>

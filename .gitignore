@@ -1,0 +1,16 @@
+*
+!.gitignore
+!*.py
+!*.yaml
+!*.launch
+!*.rviz
+!CMakeLists.txt
+!package.xml
+!README.md
+!LICENSE.txt
+!nodes/
+!src/
+!src/*
+!config/
+!launch/
+!rviz/

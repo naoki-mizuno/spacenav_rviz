@@ -1,0 +1,23 @@
+timeout: 0.1
+frame_id: world
+child_frame_id: camera
+
+# Initial speed: [linear, angular]
+# Can also specify [x, y, z, R, P, Y]
+initial_speed: [12, 1.2]
+
+# Multiplier when button is pressed: [linear, angular]
+# Can also specify [x, y, z, R, P, Y]
+speed_multiplier: [2.0, 1.1]
+
+# Initial pose of the camera
+initial:
+  position:
+    x: -1
+    y: 0
+    z: 0.5
+  orientation:
+    x: 0
+    y: 0
+    z: 0
+    w: 1
