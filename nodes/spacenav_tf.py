@@ -16,6 +16,7 @@ class TwistToTf(object):
         self._timeout = rospy.get_param("~timeout", 0.1)
         self._frame_id = rospy.get_param("~frame_id", "world")
         self._child_frame_id = rospy.get_param("~child_frame_id", "camera")
+        self._initial_pose_frame_id = rospy.get_param("~initial_pose_frame_id", None)
         # Scale for the raw joy pad input values
         scale = rospy.get_param("~initial_speed", [0.5, 0.2])
         if len(scale) == 2:
@@ -33,7 +34,7 @@ class TwistToTf(object):
             raise RuntimeError(fmt.format(len(multiplier)))
         self._speed_multiplier = np.array(multiplier)
 
-        self._pose = TwistToTf._get_initial_pose_()
+        self._pose = self._get_initial_pose_()
         self._latest_stamp = rospy.Time.now()
         # True = pressed, False = not pressed
         self._prev_button_stats = np.array([False, False])
@@ -65,7 +66,7 @@ class TwistToTf(object):
 
         # Slow down: left button pressed
         if pressed_buttons[0]:
-            self._speed_scale /=  self._speed_multiplier
+            self._speed_scale /= self._speed_multiplier
         # Speed up: right button pressed
         elif pressed_buttons[1]:
             self._speed_scale *= self._speed_multiplier
@@ -145,6 +146,51 @@ class TwistToTf(object):
 
         return self._pose, current_time, dt
 
+    def _get_initial_pose_(self):
+        initial_pose = Pose()
+        pos = initial_pose.position
+        ori = initial_pose.orientation
+
+        if self._initial_pose_frame_id is None:
+            pos.x = 0
+            pos.y = 0
+            pos.z = 0
+            ori.x = 0
+            ori.y = 0
+            ori.z = 0
+            ori.w = 1
+        else:
+            try:
+                tf_b = tf2_ros.Buffer()
+                tf_l = tf2_ros.TransformListener(tf_b)
+
+                tform = tf_b.lookup_transform(
+                    self._frame_id,
+                    self._initial_pose_frame_id,
+                    rospy.Time(0),
+                    rospy.Duration(0.1),
+                )
+
+                pos.x = tform.transform.translation.x
+                pos.y = tform.transform.translation.y
+                pos.z = tform.transform.translation.z
+                ori.x = tform.transform.rotation.x
+                ori.y = tform.transform.rotation.y
+                ori.z = tform.transform.rotation.z
+                ori.w = tform.transform.rotation.w
+            except tf2_ros.LookupException as e:
+                rospy.logwarn(e)
+
+        pos.x = rospy.get_param("~initial/position/x", pos.x)
+        pos.y = rospy.get_param("~initial/position/y", pos.y)
+        pos.z = rospy.get_param("~initial/position/z", pos.z)
+        ori.x = rospy.get_param("~initial/orientation/x", ori.x)
+        ori.y = rospy.get_param("~initial/orientation/y", ori.y)
+        ori.z = rospy.get_param("~initial/orientation/z", ori.z)
+        ori.w = rospy.get_param("~initial/orientation/w", ori.w)
+
+        return initial_pose
+
     @staticmethod
     def pose_to_tform(pose, stamp, frame_id, child_frame_id):
         """
@@ -171,20 +217,6 @@ class TwistToTf(object):
         mat = tft.quaternion_matrix(quaternion)
         mat[:3, -1] = translation
         return mat
-
-    @staticmethod
-    def _get_initial_pose_():
-        initial_pose = Pose()
-        pos = initial_pose.position
-        pos.x = rospy.get_param("~initial/position/x", 0)
-        pos.y = rospy.get_param("~initial/position/y", 0)
-        pos.z = rospy.get_param("~initial/position/z", 0)
-        ori = initial_pose.orientation
-        ori.x = rospy.get_param("~initial/orientation/x", 0)
-        ori.y = rospy.get_param("~initial/orientation/y", 0)
-        ori.z = rospy.get_param("~initial/orientation/z", 0)
-        ori.w = rospy.get_param("~initial/orientation/w", 1)
-        return initial_pose
 
 
 def main():

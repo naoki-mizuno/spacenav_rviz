@@ -10,14 +10,20 @@ initial_speed: [12, 1.2]
 # Can also specify [x, y, z, R, P, Y]
 speed_multiplier: [2.0, 1.1]
 
-# Initial pose of the camera
-initial:
-  position:
-    x: -1
-    y: 0
-    z: 0.5
-  orientation:
-    x: 0
-    y: 0
-    z: 0
-    w: 1
+# Set the initial pose of the camera in the following order
+# 1. If initial/* is specified, use that as the initial pose of the camera.
+# 2. Otherwise if initial_pose_frame_id is specified, look for existing
+#    transform between frame_id and initial_pose_frame_id.
+# 3. Otherwise or if TF lookup fails, use identity transform as the initial
+#    camera pose
+initial_pose_frame_id: camera_initial
+# initial:
+#   position:
+#     x: -1
+#     y: 0
+#     z: 0.5
+#   orientation:
+#     x: 0
+#     y: 0
+#     z: 0
+#     w: 1
