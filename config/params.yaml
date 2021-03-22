@@ -1,6 +1,7 @@
 timeout: 0.1
 frame_id: world
 child_frame_id: camera
+ignore_roll: false
 
 # Initial speed: [linear, angular]
 # initial_speed: [12, 1.2]

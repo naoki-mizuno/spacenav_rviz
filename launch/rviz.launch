@@ -2,6 +2,7 @@
 <launch>
   <arg name="frame_id" default="world" />
   <arg name="child_frame_id" default="camera" />
+  <arg name="ignore_roll" default="false" />
   <!-- Choose from: classic.launch, static_deadband.launch, no_deadband.launch -->
   <arg name="spacenav_launch" default="static_deadband.launch" />
 
@@ -13,6 +14,7 @@
     <rosparam command="load" file="$(find spacenav_rviz)/config/params.yaml" />
     <param name="frame_id" value="$(arg frame_id)" />
     <param name="child_frame_id" value="$(arg child_frame_id)" />
+    <param name="ignore_roll" value="$(arg ignore_roll)" />
   </node>
 
   <include file="$(find spacenav_node)/launch/$(arg spacenav_launch)" />

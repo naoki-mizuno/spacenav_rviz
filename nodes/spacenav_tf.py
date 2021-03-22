@@ -33,6 +33,7 @@ class TwistToTf(object):
             fmt = "speed_multiplier must be length 2 or 6 but got {}"
             raise RuntimeError(fmt.format(len(multiplier)))
         self._speed_multiplier = np.array(multiplier)
+        self._ignore_roll = rospy.get_param("~ignore_roll", False)
 
         self._pose = self._get_initial_pose_()
         self._latest_stamp = rospy.Time.now()
@@ -84,13 +85,13 @@ class TwistToTf(object):
         twist = msg
         current_time = rospy.Time.now()
 
-        new_pose, stamp, _ = self.apply_twist(twist, current_time)
+        new_pose, stamp, _ = self.apply_twist(twist, current_time, self._ignore_roll)
         tform = TwistToTf.pose_to_tform(
             new_pose, stamp, self._frame_id, self._child_frame_id
         )
         self._tf_b.sendTransform(tform)
 
-    def apply_twist(self, twist, current_time=None):
+    def apply_twist(self, twist, current_time=None, ignore_roll=False):
         """
         :type twist: Twist
         :type current_time: rospy.Time
@@ -136,6 +137,9 @@ class TwistToTf(object):
         new_mat = np.dot(curr_mat, delta_mat)
         new_trn = tft.translation_from_matrix(new_mat)
         new_q = tft.quaternion_from_matrix(new_mat)
+        if ignore_roll:
+            yaw, pitch, roll = tft.euler_from_quaternion(new_q, axes="rzyx")
+            new_q = tft.quaternion_from_euler(yaw, pitch, 0, axes="rzyx")
         self._pose.position.x = new_trn[0]
         self._pose.position.y = new_trn[1]
         self._pose.position.z = new_trn[2]
