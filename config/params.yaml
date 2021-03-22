@@ -18,7 +18,7 @@ speed_multiplier: [2.0, 1.1]
 #    transform between frame_id and initial_pose_frame_id.
 # 3. Otherwise or if TF lookup fails, use identity transform as the initial
 #    camera pose
-initial_pose_frame_id: camera_initial
+# initial_pose_frame_id: camera_initial
 # initial:
 #   position:
 #     x: -1
